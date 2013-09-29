@@ -2,14 +2,6 @@
 
 from settings_local import *
 
-import sys
-sys.path.append("/home/forcer/Projects/evecode/web/electusmatari.com/data/python/")
-
-# import logging
-# logging.basicConfig(filename="/home/forcer/Projects/gradient/logs/grd.log",
-#                     format="%(asctime)s %(message)s",
-#                     level=logging.DEBUG)
-
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
@@ -105,4 +97,3 @@ INSTALLED_APPS = (
 
 AUTH_PROFILE_MODULE = 'emauth.Profile'
 LOGIN_URL = 'http://www.electusmatari.com/forums/member.php?action=login'
-
