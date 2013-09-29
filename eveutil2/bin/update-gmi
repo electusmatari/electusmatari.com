@@ -1,8 +1,0 @@
-#!/bin/sh
-
-FILENAME=$(date +"/home/forcer/public_html/eve/gmi/gmi-%Y-%m-%d.txt")
-
-wget -qO $FILENAME http://www.electusmatari.com/gmi/?format=csv
-cp $FILENAME /home/forcer/public_html/eve/gmi/current.txt
-cp /home/forcer/public_html/eve/grd-pricelist.txt \
-   $(date +"/home/forcer/public_html/eve/grdprices/grd-pricelist-%Y-%m-%d.txt")

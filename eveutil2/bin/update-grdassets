@@ -1,9 +1,0 @@
-#!/bin/sh
-
-/home/forcer/Projects/eveutil/2.0/scripts/grdassets > `date +"/home/forcer/Depot/EVE/grdassets/%Y-%m-%d.txt"`
-/home/forcer/Projects/eveutil/2.0/scripts/grdassetsdump > `date +"/home/forcer/Depot/EVE/grdassets/%Y-%m-%d.csv"`
-
-cat /tmp/forcer/eveapicache/b1aacefff5be9f5026d526494b6fd430 \
-| sed -e 1d \
-| gzip -9 \
-> `date +"/home/forcer/Depot/EVE/grdassets/%Y-%m-%d.xml.gz"`

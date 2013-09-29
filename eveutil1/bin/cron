@@ -1,8 +1,0 @@
-#!/bin/sh
-
-export HOME="/home/forcer"
-export PATH="/home/forcer/Projects/eveutil/dev/bin/:$PATH"
-
-export PYTHONPATH="$PYTHONPATH:/home/forcer/Projects/twf/dev/:/home/forcer/Projects/eveutil/dev/bin/:/home/forcer/Projects/eveutil/2.0/lib/"
-
-exec "$@"

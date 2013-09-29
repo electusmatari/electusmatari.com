@@ -1,5 +1,0 @@
-#!/bin/sh
-
-set -e
-
-~/Projects/evecode/eveutil2/bin/em-standings > ~/www/electusmatari.com/download/standings.html
