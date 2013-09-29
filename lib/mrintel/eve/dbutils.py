@@ -8,7 +8,7 @@ from mrintel.eve import api
 class DBConnection(object):
     def __init__(self):
         conf = ConfigParser.SafeConfigParser()
-        conf.read(["/home/forcer/Projects/private/mrintel.conf"])
+        conf.read(["/etc/emcom/mrintel.conf"])
         self.conn = psycopg2.connect(host=conf.get('database', 'host'),
                                      user=conf.get('database', 'user'),
                                      password=conf.get('database', 'password'),

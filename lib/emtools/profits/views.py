@@ -3,7 +3,6 @@ from django.views.generic.simple import direct_to_template
 
 from emtools.emauth.decorators import require_mybbgroup
 
-import sys ; sys.path.append("/home/forcer/Projects/evecode/web/gradient.electusmatari.com/data/python/")
 from gradient.index.models import Index
 
 ORE_NOTES = {

@@ -116,10 +116,6 @@ class NotificationWatcher(threading.Thread):
     def notify(self, timestamp, typeid, notificationid):
         ntext = self.api.char.NotificationTexts(ids=notificationid
                                                 ).notifications[0]
-        f = open("/home/forcer/Data/MrIntel/notification-api/{0}.txt".format(typeid),
-                 "w")
-        f.write(ntext.data)
-        f.close()
         handler = getattr(self, "notify_{0}".format(typeid), None)
         if handler is None:
             return

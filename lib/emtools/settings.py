@@ -1,6 +1,6 @@
 # Django settings for emtools project.
 
-from settings_local import *
+execfile("/etc/emcom/settings_local.py")
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -66,7 +66,6 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/home/forcer/Projects/evecode/web/electusmatari.com/data/python/emtools/templates/",
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

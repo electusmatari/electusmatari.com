@@ -1,6 +1,6 @@
 # Django settings for emtools project.
 
-from settings_local import *
+execfile("/etc/emcom/settings_local.py")
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG

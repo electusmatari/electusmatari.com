@@ -6,9 +6,6 @@ from django.views.generic.simple import direct_to_template
 from emtools.ccpeve.models import apiroot
 import emtools.ccpeve.igb as igb
 
-import sys
-sys.path.append("/home/forcer/Projects/evecode/web/gradient.electusmatari.com/data/python/")
-
 from gradient.uploader.models import FacWarSystem
 from emtools.intel.models import Pilot, Corporation, Change
 
@@ -190,7 +187,7 @@ def view_corpchanges(request):
 #     last_page = (count / 100) + 1
 #     if pagenum > last_page:
 #         pagenum = last_page
-# 
+#
 #     qs = Corporation.objects.raw("""
 # SELECT c.*,
 #        f.id AS faction_id, -- overwrite the above

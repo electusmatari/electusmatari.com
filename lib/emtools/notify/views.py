@@ -8,8 +8,6 @@ from django.views.generic.simple import direct_to_template
 
 from emtools.utils import connect
 
-import sys
-sys.path.append("/home/forcer/Projects/evecode/web/gradient.electusmatari.com/data/python/")
 from gradient.gts.views import add_ticket_status
 from gradient.shop.views import add_shop_status
 
