@@ -18,7 +18,7 @@ def emapps(environ, start_response):
     dbh.setFormatter(formatter)
     log.addHandler(dbh)
 
-    environ['emapps.user'] = User(*mybb_auth.mybb_auth())
+    environ['emapps.user'] = User(*mybb_auth.mybb_auth(environ))
     app = wsgiref.util.shift_path_info(environ)
     if app == 'standings':
         import standings

@@ -1,11 +1,11 @@
 import kgi
-import os
 import Cookie
 
 forum_name = "Internal"
 
-def mybb_auth():
-    cookie = Cookie.SimpleCookie(os.getenv("HTTP_COOKIE"))
+
+def mybb_auth(environ):
+    cookie = Cookie.SimpleCookie(environ.get("HTTP_COOKIE"))
     try:
         (uid, loginkey) = cookie["mybbuser"].value.split("_", 1)
     except KeyError:
