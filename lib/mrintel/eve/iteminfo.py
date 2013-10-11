@@ -81,8 +81,8 @@ def format_reply(info):
     elif info['type'] == 'wormhole':
         return ("Wormhole {name}, leads to class {wormholeTargetSystemClass} "
                 "({classdesc}). "
-                "Maximum jumpable mass {wormholeMaxJumpMass:,d} kg, "
-                "maximum stable mass {wormholeMaxStableMass:,d} kg. "
+                "Maximum jumpable mass {wormholeMaxJumpMass:d} kg, "
+                "maximum stable mass {wormholeMaxStableMass:d} kg. "
                 "Maximum stable time {stable:.1f} hours. "
                 "Distribution {wormholeTargetDistribution}."
                 .format(stable=info['wormholeMaxStableTime'] / 60.0,

@@ -38,7 +38,7 @@ class EVEBotMixIn(object):
         with EVEAPI(sender, channel) as apiroot:
             status = apiroot.server.ServerStatus()
             self.reply(sender, channel,
-                       "Server {0}, {1:,} players online"
+                       "Server {0}, {1} players online"
                        .format("open" if status.serverOpen == 'True'
                                else "closed",
                                status.onlinePlayers))

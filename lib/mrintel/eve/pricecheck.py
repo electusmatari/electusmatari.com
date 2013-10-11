@@ -21,18 +21,18 @@ def format_reply(price, query):
             return ("I'm not sure what you mean, pick one of these? {0}"
                     .format(", ".join(repr(tn) for tn in typenames)))
         else:
-            return ("I found {0:,} type names matching {1}, could you be "
+            return ("I found {0} type names matching {1}, could you be "
                     "a bit more specific?"
                     .format(len(typenames), query))
     # NPC sell order
     if price['source'] == 'npc':
         if len(price['corporations']) > 5:
-            seller = ("{0:,} non-capsuleer corporations"
+            seller = ("{0:} non-capsuleer corporations"
                       .format(len(price['corporations'])))
         else:
             seller = ", ".join(sorted(price['corporations']))
         return ("{typename} is sold by {seller} on the open market "
-                "for {price:,.2f} ISK."
+                "for {price:.2f} ISK."
                 .format(seller=seller, **price))
     # Contracts
     if price['source'] == 'contracts':
@@ -41,15 +41,15 @@ def format_reply(price, query):
                     "have been reported.".format(**price))
         else:
             return ("Capsuleers report to have seen {typename} sold via "
-                    "contracts for {price:,.2f} ISK.".format(**price))
+                    "contracts for {price:.2f} ISK.".format(**price))
     # Market
     if price['source'] == 'market':
         if price['price'] is None:
             return ("{typename} should be available on the open market, "
                     "but no prices have been reported.".format(**price))
         else:
-            return ("{typename} is sold for {price:,.2f} ISK "
-                    "(for {quantity:,} units) in {system}, {region}."
+            return ("{typename} is sold for {price:.2f} ISK "
+                    "(for {quantity} units) in {system}, {region}."
                     .format(**price))
 
 
