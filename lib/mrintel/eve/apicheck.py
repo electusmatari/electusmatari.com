@@ -101,6 +101,8 @@ class APICheck(threading.Thread):
             self.update_alliance(allyid)
 
     def update_character(self, charid):
+        if charid == 0:
+            return
         try:
             charinfo = self.api.eve.CharacterInfo(characterID=charid)
         except:
@@ -117,6 +119,8 @@ class APICheck(threading.Thread):
                                    lastapi=datetime.datetime.utcnow())
 
     def update_corporation(self, corpid):
+        if corpid == 0:
+            return
         try:
             corpinfo = self.api.corp.CorporationSheet(corporationID=corpid)
         except api.eveapi.Error as e:
