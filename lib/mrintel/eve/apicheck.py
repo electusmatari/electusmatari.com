@@ -8,6 +8,7 @@ from mrintel.eve import dbutils
 
 ONE_DAY_SECONDS = 24 * 60 * 60
 
+
 class APICheck(threading.Thread):
     def __init__(self, bot):
         super(APICheck, self).__init__()
@@ -76,7 +77,12 @@ class APICheck(threading.Thread):
         """
         cl = self.emapi.corp.ContactList()
         for contact in cl.allianceContactList:
-            contacttype = self.conn.guess_itemtype(contact.contactID)
+            try:
+                contacttype = self.conn.guess_itemtype(contact.contactID)
+            except RuntimeError:  # 500 Internal Server Error
+                logging.exception("Exception checking contact {0}"
+                                  .format(contact.contactID))
+                continue
             if contacttype == 'character':
                 self.conn.ensure_character_exists(contact.contactID)
             elif contacttype == 'corporation':
