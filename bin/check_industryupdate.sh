@@ -6,7 +6,7 @@ then
     pgrep -lf django-admin.*industryupdate
     pkill -f django-admin.*industryupdate
     sleep 5
-    pkill -f9 django-admin.*industryupdate
+    pkill -9 -f django-admin.*industryupdate
 
     exit 1
 fi
