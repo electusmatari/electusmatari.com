@@ -114,15 +114,16 @@ class APICheck(threading.Thread):
         except:
             logging.error("Error updating character {0}".format(charid))
             raise
-        self.conn.update_character(charid,
-                                   name=charinfo.characterName,
-                                   corporationid=charinfo.corporationID,
-                                   allianceid=getattr(charinfo, 'allianceID',
-                                                      None),
-                                   security=charinfo.securityStatus,
-                                   do_api_check=False,
-                                   lastseen=datetime.datetime.utcnow(),
-                                   lastapi=datetime.datetime.utcnow())
+        self.conn.update_character(
+            charid,
+            name=charinfo.characterName.encode("utf-8"),
+            corporationid=charinfo.corporationID,
+            allianceid=getattr(charinfo, 'allianceID',
+                               None),
+            security=charinfo.securityStatus,
+            do_api_check=False,
+            lastseen=datetime.datetime.utcnow(),
+            lastapi=datetime.datetime.utcnow())
 
     def update_corporation(self, corpid):
         if corpid == 0:
@@ -149,25 +150,27 @@ class APICheck(threading.Thread):
         except:
             logging.error("Error updating corporation {0}".format(corpid))
             raise
-        self.conn.update_corporation(corpid,
-                                     name=corpinfo.corporationName,
-                                     allianceid=corpinfo.allianceID or None,
-                                     ticker=corpinfo.ticker,
-                                     members=corpinfo.memberCount,
-                                     do_api_check=False,
-                                     lastseen=datetime.datetime.utcnow(),
-                                     lastapi=datetime.datetime.utcnow())
+        self.conn.update_corporation(
+            corpid,
+            name=corpinfo.corporationName.encode("utf-8"),
+            allianceid=corpinfo.allianceID or None,
+            ticker=corpinfo.ticker,
+            members=corpinfo.memberCount,
+            do_api_check=False,
+            lastseen=datetime.datetime.utcnow(),
+            lastapi=datetime.datetime.utcnow())
 
     def update_alliance(self, allyid):
         for ally in self.api.eve.AllianceList().alliances:
             if ally.allianceID == allyid:
-                self.conn.update_alliance(allyid,
-                                          name=ally.name,
-                                          ticker=ally.shortName,
-                                          members=ally.memberCount,
-                                          do_api_check=False,
-                                          lastseen=datetime.datetime.utcnow(),
-                                          lastapi=datetime.datetime.utcnow())
+                self.conn.update_alliance(
+                    allyid,
+                    name=ally.name.encode("utf-8"),
+                    ticker=ally.shortName,
+                    members=ally.memberCount,
+                    do_api_check=False,
+                    lastseen=datetime.datetime.utcnow(),
+                    lastapi=datetime.datetime.utcnow())
                 return
         self.conn.update_alliance(allyid,
                                   members=0,
