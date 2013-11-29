@@ -9,33 +9,26 @@ $ createdb newdbdump -O forcer
 
 As forcer:
 
-mysql newdbdump < mysql55-inferno12-structure.sql
-mysql newdbdump < mysql55-inferno12-data.sql
-
+mysql newdbdump < the_database_dump.sql
 mysqldump newdbdump --add-drop-table  > dump1.sql
 
-perl ~/Projects/evecode/eve-dbdump/dev/bin/mysql2pgsql.pl \
+perl /srv/emcom/electusmatari.com/utils/dbdump/mysql2pgsql.pl \
   dump1.sql dump2.sql
 sed -e 's/"xmax"/"xMax"/g' -e 's/"xmin"/"xMin"/g' \
   < dump2.sql > dump3.sql
-
-FIXME!
-
-- dump3.sql now has some weird "unique" KEY ... stuff for
-  invuniquenames, just delete that line.
-- Also, orbyteaindex => orbitindex
-- translationtables: Delete line (and preceding comma)
-  '''primary key ("sourcetable(255"),translatedKey(255))'''
-
 
 psql newdbdump < dump3.sql
 
 pg_dump newdbdump > dump4.sql
 
-pg_dump eve -U emtools -h localhost > backup.sql
+pg_dump emcom -U emcom -h localhost > backup.sql
 
-bzip2 -1 dump4.sql
-Projects/evecode/bin/importdbdump dump4.sql.bz2
+(
+  echo "DROP SCHEMA ccp CASCADE;"
+  echo "CREATE SCHEMA ccp;"
+  echo "SET search_path TO ccp, pg_catalog;"
+  cat dump4.sql | grep -v "SET search_path"
+) | psql -h localhost -U emcom emcom
 
 
 Cleanup:
