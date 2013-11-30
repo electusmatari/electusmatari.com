@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "$(pgrep -f django-admin.*industryupdate | wc -l)" -gt 1 ]
+if [ "$(pgrep -f python.*django-admin.*industryupdate | wc -l)" -gt 1 ]
 then
     echo "Too many industryupdate jobs running:"
     pgrep -lf django-admin.*industryupdate
