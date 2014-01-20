@@ -156,7 +156,7 @@ class NotificationWatcher(threading.Thread):
             ):
             s += ", {aggressorAlliance}".format(**fields)
         s += " aggressed {type} on {moon}.".format(**fields)
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_76(self, timestamp, fields):
         # 76: Tower Resource Alert
@@ -179,7 +179,7 @@ class NotificationWatcher(threading.Thread):
             ):
             s += ", {aggressorAlliance}".format(**fields)
         s += " aggressed {type} on {planet}.".format(**fields)
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_94(self, timestamp, fields):
         # 94: Customs Office has entered reinforced
@@ -201,7 +201,7 @@ class NotificationWatcher(threading.Thread):
         reinf = wintime_to_datetime(long(fields['reinforceExitTime']))
         s += (" Will come out of reinforce on {0}."
               .format(reinf.strftime("%Y-%m-%d %H:%M:%S")))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_5(self, timestamp, fields):
         # 5: notificationTypeAllWarDeclaredMsg
@@ -212,19 +212,19 @@ class NotificationWatcher(threading.Thread):
         # hostileState: 0
         s = ("[War] {declaredBy} has declared war on {against}."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_27(self, timestamp, fields):
         # 27: notificationTypeCorpWarDeclaredMsg
         s = ("[War] {declaredBy} has declared war on {against}."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_28(self, timestamp, fields):
         # 28: notificationTypeCorpWarFightingLegalMsg
         s = ("[War] {declaredBy} has declared war on {against}."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_6(self, timestamp, fields):
         # 6: notificationTypeAllWarSurrenderMsg
@@ -235,25 +235,25 @@ class NotificationWatcher(threading.Thread):
         # hostileState: 1
         s = ("[War] {against} has surrendered to {declaredBy}."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_29(self, timestamp, fields):
         # 29: notificationTypeCorpWarSurrenderMsg
         s = ("[War] {against} has surrendered to {declaredBy}."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_7(self, timestamp, fields):
         # 7: notificationTypeAllWarRetractedMsg
         s = ("[War] {declaredBy} has retracted the war against {against}."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_30(self, timestamp, fields):
         # 30: notificationTypeCorpWarRetractedMsg
         s = ("[War] {declaredBy} has retracted the war against {against}."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_8(self, timestamp, fields):
         # 8: notificationTypeAllWarInvalidatedMsg
@@ -261,7 +261,7 @@ class NotificationWatcher(threading.Thread):
              "against {against} because {declaredBy} forgot to "
              "pay the bribe."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_31(self, timestamp, fields):
         # 31: notificationTypeCorpWarInvalidatedMsg
@@ -269,7 +269,7 @@ class NotificationWatcher(threading.Thread):
              "against {againstName} because {declaredBy} forgot to "
              "pay the bribe."
              .format(**fields))
-        self.notify_channel("#em-private", s)
+        self.notify_channel("#grd", s)
 
     def notify_11(self, timestamp, fields):
         # 11: Bill not paid because there's not enough ISK available
