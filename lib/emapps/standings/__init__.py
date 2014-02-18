@@ -29,7 +29,7 @@ def standings_check(environ):
     to_diplo = []
     to_act = {}
     now = datetime.datetime.utcnow()
-    for (tid, subject, edittime, prefix, editor) in get_threads():
+    for (tid, subject, edittime, prefix, editor) in get_threads(environ["standingsforum"]):
         try:
             edittime = datetime.datetime.utcfromtimestamp(edittime)
         except:
@@ -78,7 +78,7 @@ def view_standings(environ):
     update_rc()
     positive = []
     negative = []
-    for (tid, subject, edittime, prefix, editor) in get_threads():
+    for (tid, subject, edittime, prefix, editor) in get_threads(environ["standingsforum"]):
         p = parse_subject(subject)
         if p is None:
             continue
@@ -131,7 +131,7 @@ def update_rc():
                 in get_last_standings())
     current = {}
     changes = []
-    for (tid, subject, edittime, prefix, editor) in get_threads():
+    for (tid, subject, edittime, prefix, editor) in get_threads(environ["standingsforum"]):
         p = parse_subject(subject)
         if p is None:
             continue
@@ -198,15 +198,15 @@ FROM mybb_forums AS f
        ON t.firstpost = p.pid
      LEFT JOIN mybb_users AS eu
        ON (CASE p.edituid WHEN 0 THEN p.uid ELSE p.edituid END) = eu.uid
-WHERE f.fid = 19
+WHERE f.fid = {forumid}
   AND t.sticky = 0
 ORDER BY t.subject
 ;
 """
-def get_threads():
+def get_threads(standingsforum):
     db = kgi.connect('dbforums')
     c = db.cursor()
-    c.execute(SQL_THREADS)
+    c.execute(SQL_THREADS.format(forumid=standingsforum))
     return c.fetchall()
 
 SQL_LAST_STANDINGS = """

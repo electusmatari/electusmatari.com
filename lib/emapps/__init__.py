@@ -22,6 +22,13 @@ def emapps(environ, start_response):
     app = wsgiref.util.shift_path_info(environ)
     if app == 'standings':
         import standings
+        # use forum 19 for EM standings
+        environ["standingsforum"] = "19"
+        data = standings.standingsapp(environ, start_response)
+    elif app == 'grdstandings':
+        import standings
+        # use forum 169 for GRD standings
+        environ["standingsforum"] = "169"
         data = standings.standingsapp(environ, start_response)
     elif app == 'gradient':
         import gradient
