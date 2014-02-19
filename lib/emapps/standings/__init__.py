@@ -75,7 +75,7 @@ def view_crimes(environ):
                                  user=environ["emapps.user"])
 
 def view_standings(environ):
-    update_rc()
+    update_rc(environ)
     positive = []
     negative = []
     for (tid, subject, edittime, prefix, editor) in get_threads(environ["standingsforum"]):
@@ -117,7 +117,7 @@ def view_standings(environ):
                                      negative=negative)
 
 def view_rc(environ):
-    update_rc()
+    update_rc(environ)
     page = kgi.paginate('standings_rc',
                         dbname='dbforcer',
                         extra='ORDER BY date DESC, entity ASC')
@@ -126,7 +126,7 @@ def view_rc(environ):
                                  current_time=eve_time(),
                                  page=page)
 
-def update_rc():
+def update_rc(environ):
     last = dict((entity.lower(), standing) for (entity, standing)
                 in get_last_standings())
     current = {}
