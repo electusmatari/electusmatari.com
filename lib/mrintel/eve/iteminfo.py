@@ -460,6 +460,11 @@ def info_character(db, itemname):
     charid = names[0].characterID
     try:
         charinfo = apiroot.eve.CharacterInfo(characterID=charid)
+    except RuntimeError:
+        # for some reason requesting CharacterInfo on a non-character
+        # started throwing RuntimeError instead of api.eveapi.Error,
+        # for now, just treat as one of the known API errors
+        return None
     except api.eveapi.Error as e:
         if e.code not in (105,  # Invalid characterID
                           522): # Failed getting character information
