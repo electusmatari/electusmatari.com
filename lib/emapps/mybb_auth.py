@@ -1,8 +1,7 @@
 import kgi
 import Cookie
 
-forum_name = "Internal"
-
+forum_names = { 'em': "Internal", 'grd': "<span class=\"grdmainforum\">Gradient</span>" }
 
 def mybb_auth(environ):
     cookie = Cookie.SimpleCookie(environ.get("HTTP_COOKIE"))
@@ -29,7 +28,9 @@ def mybb_auth(environ):
 
     groupexpr = ",".join(["%s"]*len(groups))
 
-    c.execute("""
+    auth_flags = {}
+    for auth_group in forum_names:
+        c.execute("""
               SELECT COUNT(*)
               FROM mybb_forums AS forums
                    INNER JOIN mybb_forumpermissions AS perm
@@ -38,6 +39,8 @@ def mybb_auth(environ):
                 AND perm.gid IN (%s)
                 AND perm.canview = 1;
               """ % groupexpr,
-              tuple([forum_name] + groups))
-    count = c.fetchone()[0]
-    return (username, count > 0)
+              tuple([forum_names[auth_group]] + groups))
+        count = c.fetchone()[0]
+        auth_flags[auth_group] = count > 0
+
+    return (username, auth_flags)

@@ -12,6 +12,8 @@ PREFIX_TOSET = ["Set standing"]
 PREFIX_DIPLO = ["Needs diplomat's attention"]
 PREFIX_ACT = ["In action"]
 
+standings_forums = { 'em': 19, 'grd': 169 }
+
 def standingsapp(environ, start_response):
     URLCONF = [
         ('^/check/', standings_check),
@@ -21,15 +23,19 @@ def standingsapp(environ, start_response):
     ]
     return kgi.dispatch(environ, start_response, URLCONF)
 
-@require_permission('em')
 def standings_check(environ):
+    user = environ['emapps.user']
+    if not user.has_permission(environ["org"]):
+        return kgi.html_response(
+            unauthorized(user, 'You are not authorized.')
+            )
     tids = {}
     bogus = []
     to_set = []
     to_diplo = []
     to_act = {}
     now = datetime.datetime.utcnow()
-    for (tid, subject, edittime, prefix, editor) in get_threads(environ["standingsforum"]):
+    for (tid, subject, edittime, prefix, editor) in get_threads(standings_forums[environ["org"]]):
         try:
             edittime = datetime.datetime.utcfromtimestamp(edittime)
         except:
@@ -78,7 +84,7 @@ def view_standings(environ):
     update_rc()
     positive = []
     negative = []
-    for (tid, subject, edittime, prefix, editor) in get_threads(environ["standingsforum"]):
+    for (tid, subject, edittime, prefix, editor) in get_threads(standings_forums[environ["org"]]):
         p = parse_subject(subject)
         if p is None:
             continue
@@ -131,7 +137,7 @@ def update_rc():
                 in get_last_standings())
     current = {}
     changes = []
-    for (tid, subject, edittime, prefix, editor) in get_threads(environ["standingsforum"]):
+    for (tid, subject, edittime, prefix, editor) in get_threads(standings_forums[environ["org"]]):
         p = parse_subject(subject)
         if p is None:
             continue
