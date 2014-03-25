@@ -22,13 +22,11 @@ def emapps(environ, start_response):
     app = wsgiref.util.shift_path_info(environ)
     if app == 'standings':
         import standings
-        # use forum 19 for EM standings
-        environ["standingsforum"] = "19"
+        environ["org"] = 'em'
         data = standings.standingsapp(environ, start_response)
     elif app == 'grdstandings':
         import standings
-        # use forum 169 for GRD standings
-        environ["standingsforum"] = "169"
+        environ["org"] = 'grd'
         data = standings.standingsapp(environ, start_response)
     elif app == 'gradient':
         import gradient
@@ -49,17 +47,17 @@ class DBLogHandler(logging.Handler):
                   ( self.format(record), ))
 
 class User(object):
-    def __init__(self, username, is_emuser):
+    def __init__(self, username, auth_flags):
         self.username = username
-        self.is_emuser = is_emuser
+        self.auth_flags = auth_flags
         self.permissions = None
 
     def is_authenticated(self):
         return self.username != 'Anonymous'
 
     def has_permission(self, name):
-        if name == 'em':
-            return self.is_emuser
+        if name in self.auth_flags:
+            return self.auth_flags[name]
         if self.permissions is None:
             db = kgi.connect('dbforcer')
             c = db.cursor()
