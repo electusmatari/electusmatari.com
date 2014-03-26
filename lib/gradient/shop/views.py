@@ -66,6 +66,15 @@ def index_view(request):
 
 def add_to_cart(request, shopuser):
     next_url = request.POST.get('next', '/shop/')
+    if request.POST.get('typeid', None) == "shipfit":
+        shipfit = request.POST["shipfit"]
+        for line in shipfit.splitlines():
+            try:
+                product = ProductList.objects.get(typename=line)
+                shopuser.add(product.typeid, 1)
+            except:
+                # ignore unrecognized lines
+        shopuser.save(request)
     try:
         typeid = int(request.POST.get('typeid', None))
         qty = int(request.POST.get('quantity', None))
