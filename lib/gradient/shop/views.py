@@ -69,9 +69,17 @@ def add_to_cart(request, shopuser):
     if request.POST.get('typeid', None) == "shipfit":
         shipfit = request.POST["shipfit"]
         for line in shipfit.splitlines():
+            if len(line) == 0 or line[0] == '[':
+                continue
             try:
+                line = line.strip()
+                item_and_qty = re.split("\sx([0-9]*)$", line)
+                item = item_and_qty[0]
+                qty = 1
+                if len(item_and_qty) > 1:
+                    qty = int(item_and_qty[1])
                 product = ProductList.objects.get(typename=line)
-                shopuser.add(product.typeid, 1)
+                shopuser.add(product.typeid, qty)
             except:
                 # ignore unrecognized lines
         shopuser.save(request)
