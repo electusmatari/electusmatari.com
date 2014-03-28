@@ -83,6 +83,7 @@ def add_to_cart(request, shopuser):
                 shopuser.add(product.typeid, qty)
             except:
                 # ignore unrecognized lines
+                pass
         shopuser.save(request)
     try:
         typeid = int(request.POST.get('typeid', None))
