@@ -66,6 +66,24 @@ def index_view(request):
 
 def add_to_cart(request, shopuser):
     next_url = request.POST.get('next', '/shop/')
+    if request.POST.get('typeid', None) == "shipfit":
+        shipfit = request.POST["shipfit"]
+        for line in shipfit.splitlines():
+            line = line.strip()
+            if not line or line.startswith("["):
+                continue
+            try:
+                m = re.match(r'^(.*?)(?:\s+x([0-9]+))?$', line)
+                if m is None:
+                    continue
+                itemtype, qty = m.groups()
+                if qty is None:
+                    qty = 1
+                product = ProductList.objects.get(typename=itemtype)
+                shopuser.add(product.typeid, qty)
+            except:
+                # ignore unrecognized lines
+        shopuser.save(request)
     try:
         typeid = int(request.POST.get('typeid', None))
         qty = int(request.POST.get('quantity', None))

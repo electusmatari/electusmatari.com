@@ -79,4 +79,19 @@
 </div>
 {% endif %}
 
+{% if indexpage %}
+<h2>Order Complete Fitting</h2>
+<div class="product">
+<form method="post" action="">
+  <input type="hidden" name="next" value="{{request.get_full_path}}" />
+  <input type="hidden" name="typeid" value="shipfit" />
+  <textarea rows="10" cols="50" name="shipfit">
+  Paste fit (EFT format) here.
+  </textarea>
+  <input type="submit" value="Add Fit to Cart" />
+</form>
+</div>
+
+{% endif %}
+
 {% endblock %}
