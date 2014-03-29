@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 from functools import wraps
 
 from emtools.ccpeve.models import apiroot, APIKey
@@ -70,21 +71,37 @@ def add_to_cart(request, shopuser):
         shipfit = request.POST["shipfit"]
         for line in shipfit.splitlines():
             line = line.strip()
-            if not line or line.startswith("["):
+            if not line:
                 continue
-            try:
-                m = re.match(r'^(.*?)(?:\s+x([0-9]+))?$', line)
-                if m is None:
+            # [Stabber Fleet Issue, DualProp Buffer]
+            m = re.match(r'^\[(.*?),.*$', line)
+            if m is not None:
+                itemtype = m.group(1)
+                try:
+                    product = ProductList.objects.get(typename=itemtype)
+                except ProductList.DoesNotExist:
+                    messages.add_message(request, messages.ERROR,
+                                         "Can't find {}"
+                                         .format(itemtype))
                     continue
+                shopuser.add(product.typeid, 1)
+                continue
+            #  Valkyrie II x4
+            m = re.match(r'^(.+?)(?:\s+x([0-9]+))?$', line)
+            if m is not None:
                 itemtype, qty = m.groups()
                 if qty is None:
                     qty = 1
-                product = ProductList.objects.get(typename=itemtype)
-                shopuser.add(product.typeid, qty)
-            except:
-                # ignore unrecognized lines
-                pass
+                try:
+                    product = ProductList.objects.get(typename=itemtype)
+                except ProductList.DoesNotExist:
+                    messages.add_message(request, messages.ERROR,
+                                         "Can't find {}"
+                                         .format(itemtype))
+                    continue
+                shopuser.add(product.typeid, int(qty))
         shopuser.save(request)
+        return HttpResponseRedirect(next_url)
     try:
         typeid = int(request.POST.get('typeid', None))
         qty = int(request.POST.get('quantity', None))
@@ -459,7 +476,7 @@ def handle_post(request):
     messages.add_message(request, messages.SUCCESS,
                          'Order closed')
     return HttpResponseRedirect('/shop/handle/')
-    
+
 ##################################################################
 # Display closed orders
 
@@ -575,7 +592,7 @@ class ShopUser(object):
         else:
             shopuser = cls()
         if (shopuser.characterid is None and
-            request.user.is_authenticated() and 
+            request.user.is_authenticated() and
             request.user.profile.characterid is not None
             ):
             shopuser.characterid = request.user.profile.characterid
@@ -654,7 +671,7 @@ class ShopUser(object):
         self.corpname = info.corporation
         self.allianceid = getattr(info, 'allianceID', None)
         self.alliancename = getattr(info, 'alliance', '')
-          
+
         em = APIKey.objects.get(name='Gradient').corp()
         cl = em.ContactList()
         self.standing = 0
