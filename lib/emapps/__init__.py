@@ -56,7 +56,7 @@ class User(object):
         return self.username != 'Anonymous'
 
     def has_permission(self, name):
-        if name in self.auth_flags:
+        if self.auth_flags and name in self.auth_flags:
             return self.auth_flags[name]
         if self.permissions is None:
             db = kgi.connect('dbforcer')
