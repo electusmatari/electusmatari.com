@@ -87,9 +87,11 @@ def add_to_cart(request, shopuser):
                 shopuser.add(product.typeid, 1)
                 continue
             #  Valkyrie II x4
-            m = re.match(r'^(.+?)(?:\s+x([0-9]+))?$', line)
+            #  Heavy Assault Missile Launcher II, Scourge Heavy Assault Missile
+            m = re.match(r'^(.+?)(?:\s+x([0-9]+))?(?:,\s+(.+))?$', line)
             if m is not None:
-                itemtype, qty = m.groups()
+                itemtype, qty, ammo = m.groups()
+                # we could guess how much ammo they want, but for now, don't
                 if qty is None:
                     qty = 1
                 try:
