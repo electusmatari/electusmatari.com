@@ -238,7 +238,7 @@ def get_allies():
         contacts = grd.ContactList()
     except Exception as e:
         raise AuthenticationError("Error during API call: %s" % str(e))
-    for contact in contacts.allianceContactList:
+    for contact in contacts.corporateContactList:
         if contact.standing == 10:
             allies.add(contact.contactID)
     return allies
