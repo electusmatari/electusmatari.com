@@ -180,7 +180,9 @@ def update_single_user2(api, mybbuser, grddetails, allies):
         mybbuser.add_group('Electus Matari')
 
     # Allies
-    if profile.allianceid in allies or profile.corpid in allies:
+    if (profile.allianceid in allies
+        or profile.corpid in allies
+        or profile.characterid in allies):
         mybbuser.add_group('Ally')
 
     # GRD members
