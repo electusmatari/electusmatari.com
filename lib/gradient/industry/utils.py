@@ -364,6 +364,7 @@ class IndexCalculator(object):
 
 
 def get_component_list(typename):
+    mfglinecosts = get_mfglinecosts()
     invtype = InvType.from_typename(typename)
     # Blueprint
     bplist = blueprints(invtype)
@@ -372,7 +373,7 @@ def get_component_list(typename):
         result = []
         for bp in bplist:
             c = Component()
-            c.safetymargin = get_safetymargin(invtype)
+            c.safetymargin = get_safetymargin(invtype, mfglinecosts)
             c.portionsize = invtype.portionsize()
             mats1 = index.get_bag_materials(bp.extra)
             c.add_section('Blueprint', sorted(mats1))
@@ -756,6 +757,7 @@ def update_pricelist(grd):
     inventable = []
     known = set()
     PriceList.objects.all().delete()
+    mfglinecosts = get_mfglinecosts()
     for bpo in BlueprintOriginal.objects.all():
         bposet.add(bpo.typeid)
         bptype = InvType(bpo.typeid, bpo.typename)
@@ -766,7 +768,7 @@ def update_pricelist(grd):
         productioncost = index.cost(product.typename)
         if productioncost is None or not productioncost > 0:
             continue
-        safetymargin = get_safetymargin(product)
+        safetymargin = get_safetymargin(product, mfglinecosts)
         PriceList.objects.create(typename=product.typename,
                                  typeid=product.typeid,
                                  productioncost=productioncost,
@@ -784,7 +786,7 @@ def update_pricelist(grd):
         productioncost = index.cost(product.typename)
         if productioncost is None or not productioncost > 0:
             continue
-        safetymargin = get_safetymargin(product)
+        safetymargin = get_safetymargin(product, mfglinecosts)
         PriceList.objects.create(typename=product.typename,
                                  typeid=product.typeid,
                                  productioncost=productioncost,
@@ -820,30 +822,56 @@ def update_pricelist(grd):
                                  safetymargin=1.0)
         known.add(product.typeid)
 
-def get_safetymargin(product):
+def get_mfglinecosts():
+    # In some cases querying the manufacturing line cost from the API
+    # could expose sensitive intel so we'll hard-code some costs
+    # for now and monitor over time. For non-sensitive locations we get
+    # the actual cost index from the API (defaulting to 5%).
+    systems_url = "http://public-crest.eveonline.com/industry/systems/"
+    system_costs = json.loads(urllib.urlopen(system_url).read())
+    normal_cost_index = 0.05
+    for system in system_costs['items']:
+        if system['solarSystem']['id'] == 30002544:
+            for index in system['systemCostIndices']:
+                if index['activityName'] == "Manufacturing":
+                    normal_cost_index = index['costIndex']
+    return {
+        'normal': 1.10 + normal_cost_index,
+        'capitals': 1.12,
+        'tech3': 1.05
+        }
+
+def get_safetymargin(product, mfglinecosts):
+    # We allocate a "safety margin" for some items we manufacture,
+    # the specific values were recommended by Theron. At some point
+    # we should probably make this data-driven with a UI for Gradient
+    # admins to tweak it, but it's been fine for years. On top of that,
+    # the Crius expansion adds non-trivial fees for manufacturing lines.
+    # These vary by the location of the manufacturing line, which for
+    # Gradient varies by what is being manufactured.
     tl = int(product.attribute("techLevel") or 1.0)
     if tl == 1:
         group = product.group()
         if group in ['Carrier']:
-            return 1.2
+            return 1.2 * mfglinecosts['capitals']
         elif group in ['Dreadnought']:
-            return 1.1
+            return 1.1 * mfglinecosts['capitals']
         elif group in ['Industrial Command Ship',
                        'Capital Industrial Ship']:
-            return 1.11
+            return 1.11 * mfglinecosts['capitals']
         else:
-            return 1.0
+            return 1.0 * mfglinecosts['normal']
     elif tl == 2:
         category = product.category()
         if category == 'Charge':
-            return 1.5
+            return 1.5 * mfglinecosts['normal']
         elif product.typename in ['Covert Ops Cloaking Device II',
                                   'Improved Cloaking Device II']:
-            return 2.5
+            return 2.5 * mfglinecosts['normal']
         else:
-            return 1.2
+            return 1.2 * mfglinecosts['normal']
     elif tl == 3:
-        return 1.15
+        return 1.15 * mfglinecosts['tech3']
     else:
         raise RuntimeError('Unknown tech level %s (%s)' %
                            (tl, product.typename))
