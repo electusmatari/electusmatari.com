@@ -829,7 +829,7 @@ def get_mfglinecosts():
     # for now and monitor over time. For non-sensitive locations we get
     # the actual cost index from the API (defaulting to 5%).
     systems_url = "http://public-crest.eveonline.com/industry/systems/"
-    system_costs = json.loads(urllib.urlopen(system_url).read())
+    system_costs = json.loads(urllib.urlopen(systems_url).read())
     normal_cost_index = 0.05
     for system in system_costs['items']:
         if system['solarSystem']['id'] == 30002544:
