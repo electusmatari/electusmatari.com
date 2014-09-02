@@ -20,6 +20,8 @@ from gradient.industry.utils import last_price, get_component_list
 from gradient.industry.forms import WantedMarketOrderForm, StockLevelForm
 from gradient.industry.forms import BlueprintOriginalForm
 
+from emtools.ccpeve.models import APIKey
+
 @require_gradient
 def overview(request):
     if request.method == 'POST':
@@ -425,6 +427,47 @@ def bpos_delete(request, bpoid):
     else:
         return direct_to_template(request, 'industry/bpos_delete.html',
                                   extra_context={'instance': instance})
+
+@require_gradient
+def bpos_update(request):
+    if request.method == 'POST':
+        grd = APIKey.objects.get(name='Gradient').corp()
+        api_bps = grd.Blueprints()
+        for api_bp in api_bps:
+            if api_bp.quantity == -1:
+                # it's an unstacked BPO
+                try:
+                    bpo = BlueprintOriginal.objects.get(typename=api_bp.typename)
+                    api_me = api_bp.materialEfficiency
+                    # references to PE here need to change to TE when I change them elsewhere
+                    api_pe = api_bp.timeEfficency
+                    if api_me != bpo.me or api_pe != bpo.pe:
+                        messages.add_message(request, messages.ERROR,
+                                             '%s in hangar has ME/PE %d/%d, database says %d/%d' %
+                                             bpo.typename, api_me, api_pe, bpo.me, bpo.pe)
+                except BlueprintOriginal.DoesNotExist:
+                    messages.add_message(request, messages.ERROR,
+                                         '%s is available but not in the database' %
+                                         api_bp.typename)
+        for bpo in BlueprintOriginal.objects.all():
+            bpo_found = False
+            for api_bp in api_bps:
+                if bpo.typeid == api_bp.typeid and api_bp.quantity == -1:
+                    bpo_found = True
+                    break
+            if not bpo_found:
+                messages.add_message(request, messages.ERROR,
+                                     '%s is in the database but we do not own it' %
+                                     bpo.typename)
+        Change.objects.create(app='industry',
+                              category='bpos',
+                              text=('%s ran BPO auto-update' %
+                                    (request.user.profile.name)))
+        messages.add_message(request, messages.SUCCESS,
+                             'BPO inventory updated (TODO: not really updated)')
+        return HttpResponseRedirect('/industry/bpos/')
+    else:
+        return direct_to_template(request, 'industry/bpos_update.html')
 
 @require_gradient
 def transactions_view(request):
