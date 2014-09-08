@@ -432,7 +432,7 @@ def bpos_delete(request, bpoid):
 def bpos_update(request):
     if request.method == 'POST':
         grd = APIKey.objects.get(name='Gradient').corp()
-        api_bps = grd.Blueprints()
+        api_bps = grd.Blueprints().blueprints
         for api_bp in api_bps:
             if api_bp.quantity == -1:
                 # it's an unstacked BPO
