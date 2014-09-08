@@ -444,7 +444,7 @@ def bpos_update(request):
                     if api_me != bpo.me or api_pe != bpo.pe:
                         messages.add_message(request, messages.ERROR,
                                              '%s in hangar has ME/PE %d/%d, database says %d/%d' %
-                                             bpo.typename, api_me, api_pe, bpo.me, bpo.pe)
+                                             (bpo.typename, api_me, api_pe, bpo.me, bpo.pe))
                 except BlueprintOriginal.DoesNotExist:
                     messages.add_message(request, messages.ERROR,
                                          '%s is available but not in the database' %
