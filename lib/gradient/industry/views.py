@@ -440,7 +440,7 @@ def bpos_update(request):
                     bpo = BlueprintOriginal.objects.get(typename=api_bp.typeName)
                     api_me = api_bp.materialEfficiency
                     # references to PE here need to change to TE when I change them elsewhere
-                    api_pe = api_bp.timeEfficency
+                    api_pe = api_bp.timeEfficiency
                     if api_me != bpo.me or api_pe != bpo.pe:
                         messages.add_message(request, messages.ERROR,
                                              '%s in hangar has ME/PE %d/%d, database says %d/%d' %
