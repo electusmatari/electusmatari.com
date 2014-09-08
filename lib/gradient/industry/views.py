@@ -437,7 +437,7 @@ def bpos_update(request):
             if api_bp.quantity == -1:
                 # it's an unstacked BPO
                 try:
-                    bpo = BlueprintOriginal.objects.get(typename=api_bp.typename)
+                    bpo = BlueprintOriginal.objects.get(typename=api_bp.typeName)
                     api_me = api_bp.materialEfficiency
                     # references to PE here need to change to TE when I change them elsewhere
                     api_pe = api_bp.timeEfficency
@@ -448,11 +448,11 @@ def bpos_update(request):
                 except BlueprintOriginal.DoesNotExist:
                     messages.add_message(request, messages.ERROR,
                                          '%s is available but not in the database' %
-                                         api_bp.typename)
+                                         api_bp.typeName)
         for bpo in BlueprintOriginal.objects.all():
             bpo_found = False
             for api_bp in api_bps:
-                if bpo.typeid == api_bp.typeid and api_bp.quantity == -1:
+                if bpo.typeid == api_bp.typeID and api_bp.quantity == -1:
                     bpo_found = True
                     break
             if not bpo_found:
