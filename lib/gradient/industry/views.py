@@ -1,4 +1,5 @@
 import datetime
+import time
 import json
 
 from django.contrib import messages
@@ -431,40 +432,46 @@ def bpos_delete(request, bpoid):
 @require_gradient
 def bpos_update(request):
     if request.method == 'POST':
+        messages.add_message(request, messages.SUCCESS,
+                             'start time: %f' % time.time())
+        deadline = time.time() + 15 # we have 30 seconds, but building the page takes time too
         grd = APIKey.objects.get(name='Gradient').corp()
         api_bps = grd.Blueprints().blueprints
-        for api_bp in api_bps:
-            if api_bp.quantity == -1:
-                # it's an unstacked BPO
-                try:
-                    bpo = BlueprintOriginal.objects.get(typename=api_bp.typeName)
-                    api_me = api_bp.materialEfficiency
-                    # references to PE here need to change to TE when I change them elsewhere
-                    api_pe = api_bp.timeEfficiency
-                    if api_me != bpo.me or api_pe != bpo.pe:
-                        messages.add_message(request, messages.ERROR,
-                                             '%s in hangar has ME/PE %d/%d, database says %d/%d' %
-                                             (bpo.typename, api_me, api_pe, bpo.me, bpo.pe))
-                except BlueprintOriginal.DoesNotExist:
-                    messages.add_message(request, messages.ERROR,
-                                         '%s is available but not in the database' %
-                                         api_bp.typeName)
-        for bpo in BlueprintOriginal.objects.all():
-            bpo_found = False
-            for api_bp in api_bps:
-                if bpo.typeid == api_bp.typeID and api_bp.quantity == -1:
-                    bpo_found = True
-                    break
-            if not bpo_found:
+        db_bps = BlueprintOriginal.objects.all()
+        for db_bp in db_bps:
+            if time.time() > deadline:
                 messages.add_message(request, messages.ERROR,
-                                     '%s is in the database but we do not own it' %
-                                     bpo.typename)
+                                     'Max processing time reached at %f' % time.time())
+                break
+            # quantity -1 means unstacked BPO
+            matching_api_bps = [x for x in api_bps if x.typeID == db_bp.typeid and x.quantity == -1]
+            if len(matching_api_bps) == 0:
+                messages.add_message(request, messages.ERROR,
+                                     '%s is in the database but not in the API' %
+                                     db_bp.typeName)
+                continue
+            api_me = 0
+            api_pe = 0
+            for api_bp in matching_api_bps:
+                if api_bp.materialEfficiency > api_me:
+                    api_me = api_bp.materialEfficiency
+                # references to PE here need to change to TE when I change them elsewhere
+                if api_bp.timeEfficiency > api_pe:
+                    api_pe = api_bp.timeEfficiency
+            if api_me != db_bp.me or api_pe != db_bp.pe:
+                messages.add_message(request, messages.ERROR,
+                                     '%s in hangar has ME/PE %d/%d at best, database says %d/%d' %
+                                     (db_bp.typename, api_me, api_pe, db_bp.me, db_bp.pe))
+            else:
+                messages.add_message(request, messages.SUCCESS,
+                                     '%s ME/PE %d/%d match found' %
+                                      (db_bp.typename, db_bp.me, db_bp.pe))
         Change.objects.create(app='industry',
                               category='bpos',
                               text=('%s ran BPO auto-update' %
                                     (request.user.profile.name)))
         messages.add_message(request, messages.SUCCESS,
-                             'BPO inventory updated (TODO: not really updated)')
+                             'BPO inventory updated (rev1, TODO: not really updated) @ %f' % time.time())
         return HttpResponseRedirect('/industry/bpos/')
     else:
         return direct_to_template(request, 'industry/bpos_update.html')
